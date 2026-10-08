@@ -1,0 +1,6 @@
+{
+  "crate": {
+    "name": "funded-crate",
+    "funding": ["https://drips.network/app/projects/example"]
+  }
+}

@@ -16,6 +16,8 @@ Validation rejects unsupported schema versions, unsafe credential-bearing or non
 
 `parseRegistryMetadata(ecosystem, payload, context)` normalizes recorded npm, PyPI, and crates.io responses into registry/package/repository models plus immutable evidence. Evidence retains the raw payload, source, parser, and observation timestamp. Sources are restricted to HTTPS allowlists for the relevant public registry, payloads are bounded, repository URLs are canonicalized, and malformed metadata produces diagnostics instead of guessed identity.
 
+Funding evidence is collected with `parsePackageFundingMetadata`, `parseGithubFundingFile`, and `parsePublicFundingResponse`. Every emitted `FundingSource` has evidence IDs. Multiple declarations remain separate, unsafe URLs and malformed files produce diagnostics, and provider responses never become authoritative identity claims. These functions consume recorded/local payloads; they do not send money or execute payments.
+
 Phase 4 does not implement live network fetching, funding providers, relationship resolution, or final reports. Those belong to later roadmap phases.
 
 Development commands:

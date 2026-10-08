@@ -1,0 +1,8 @@
+{
+  "name": "funded-package",
+  "version": "1.0.0",
+  "funding": [
+    { "type": "github", "url": "https://github.com/sponsors/example" },
+    "https://opencollective.com/example"
+  ]
+}

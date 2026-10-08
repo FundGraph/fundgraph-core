@@ -1,0 +1,9 @@
+{
+  "info": {
+    "name": "funded-package",
+    "project_urls": {
+      "Funding": "https://github.com/sponsors/example",
+      "Source": "https://github.com/example/project"
+    }
+  }
+}

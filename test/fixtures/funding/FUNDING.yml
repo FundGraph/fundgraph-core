@@ -1,0 +1,4 @@
+github: [example, another-example]
+open_collective: example
+custom: ["https://example.org/fund", "http://unsafe.example/fund"]
+patreon: example
