@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+  <title id="title">FundGraph Core</title>
+  <desc id="desc">A reusable library connecting dependency identities, evidence, and explainable relationships.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1220"/><stop offset="1" stop-color="#152a3b"/></linearGradient><linearGradient id="edge" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#56d6be"/><stop offset="1" stop-color="#8de8cf"/></linearGradient></defs>
+  <rect width="1200" height="300" rx="28" fill="url(#bg)"/>
+  <g stroke="url(#edge)" stroke-width="3" fill="none"><path d="M770 150h115m55 0h110m55 0h70"/><path d="M818 150v-58m225 58v58" opacity=".65"/></g>
+  <g fill="#102130" stroke="#56d6be" stroke-width="3"><rect x="730" y="125" width="80" height="50" rx="12"/><circle cx="915" cy="150" r="29"/><path d="M1034 121h58l26 29-26 29h-58l-26-29z"/></g>
+  <g fill="#ddfff5"><circle cx="770" cy="150" r="5"/><circle cx="915" cy="150" r="7"/><circle cx="1063" cy="150" r="5"/></g>
+  <text x="72" y="126" fill="#f3f7ff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="50" font-weight="700">fundgraph-core</text>
+  <text x="74" y="174" fill="#b8c7dc" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="23">The reusable engine for graphs, evidence, and reports.</text>
+  <text x="74" y="232" fill="#70e1c8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="2">TYPESCRIPT LIBRARY  ·  DETERMINISTIC  ·  FIXTURE TESTED</text>
+</svg>

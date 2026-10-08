@@ -1,37 +1,76 @@
+<p align="center"><img src="assets/fundgraph-core.svg" alt="FundGraph Core: reusable graph, evidence, and report library" width="100%"></p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-56d6be?style=flat-square" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/Node.js-20%20%7C%2022-83a8ff?style=flat-square" alt="Node.js 20 and 22">
+  <img src="https://img.shields.io/badge/status-pre--publication-ffca72?style=flat-square" alt="Pre-publication release candidate">
+</p>
+
 # fundgraph-core
 
-`fundgraph-core` is the reusable, evidence-first TypeScript library for FundGraph.
+The reusable TypeScript library behind FundGraph. Core owns dependency discovery, versioned models, evidence parsing,
+relationship resolution, and deterministic reports. It contains no terminal UX or payment behavior.
 
-It owns versioned domain models, dependency discovery, registry and repository adapters, funding evidence, relationship resolution, deterministic report models, and library tests. It must not own terminal UX, process exit codes, payment execution, or project-wide governance.
+## Package status
 
-The project-level source of truth is in the sibling [`fundgraph`](../fundgraph/README.md) repository. The executable CLI is in [`fundgraph-cli`](../fundgraph-cli/README.md). The dependency direction is `fundgraph-cli` → `fundgraph-core` through a released package version.
+Version `0.1.0` is prepared locally and is not yet published to npm. The project-level mission, roadmap, security policy,
+and cross-repository decisions are maintained in the separate `fundgraph` project repository.
 
-## Current API
+## Capabilities
 
-The package exports the versioned model types, `SCHEMA_VERSION`, `validateModel`, `validateModelSet`, `hasContradictoryRelationship`, `stableStringify`, `serializeModel`, `discoverDependencies`, `parseRegistryMetadata`, `resolveFundingRelationships`, `createReport`, `renderReportText`, `renderReportJson`, `NetworkClient`, `fetchJson`, `fetchJsonBatch`, `validateNetworkUrl`, `invalidateCache`, the discovery/metadata/report/network result types, and `FundGraphError`.
+### Local dependency discovery
 
-Validation rejects unsupported schema versions, unsafe credential-bearing or non-HTTP URLs, oversized fields, and invalid model shapes. Serialization sorts object keys while preserving array order.
+`discoverDependencies(path)` reads local manifests and lockfiles for:
 
-`discoverDependencies(path)` supports npm (`package.json`/`package-lock.json`), PyPI (`pyproject.toml`/`requirements.txt` with `poetry.lock`), Cargo (`Cargo.toml`/`Cargo.lock`), and baseline Go modules (`go.mod`). It preserves dependency source paths and locators, detects npm/Cargo workspaces, recognizes npm aliases and optional dependencies, preserves Go module paths, emits transitive edges where lockfiles provide them, and returns diagnostics for missing or malformed inputs. Go discovery reads `go.mod` requirements without invoking the Go toolchain or fetching modules; Go registry metadata and funding adapters are not yet part of this scope. It never executes project files.
+| Ecosystem | Inputs | Current notes |
+|---|---|---|
+| npm | `package.json`, `package-lock.json` | Aliases, workspaces, optional dependencies, transitive lockfile edges |
+| PyPI | `pyproject.toml`, `requirements.txt`, `poetry.lock` | Optional dependencies and available lockfile edges |
+| Cargo | `Cargo.toml`, `Cargo.lock` | Workspaces, optional dependencies, available lockfile edges |
+| Go | `go.mod` | Module path and `require` entries; no `go.work`, fetch, or transitive graph expansion |
 
-`parseRegistryMetadata(ecosystem, payload, context)` normalizes recorded npm, PyPI, and crates.io responses into registry/package/repository models plus immutable evidence. Evidence retains the raw payload, source, parser, and observation timestamp. Sources are restricted to HTTPS allowlists for the relevant public registry, payloads are bounded, repository URLs are canonicalized, and malformed metadata produces diagnostics instead of guessed identity.
+The reader treats project files as data, enforces size limits, and reports malformed or missing inputs through diagnostics.
+It does not run package managers, build tools, or the Go toolchain.
 
-Funding evidence is collected with `parsePackageFundingMetadata`, `parseGithubFundingFile`, and `parsePublicFundingResponse`. Every emitted `FundingSource` has evidence IDs. Multiple declarations remain separate, unsafe URLs and malformed files produce diagnostics, and provider responses never become authoritative identity claims. These functions consume recorded/local payloads; they do not send money or execute payments.
+### Metadata and funding evidence
 
-`resolveFundingRelationships(input)` consumes packages, repositories, funding sources, evidence, repository candidates, and explicit funding claims. It emits deterministic `Relationship` records with rule IDs, evidence IDs, confidence, and `supported`, `ambiguous`, `contradictory`, or `unresolved` status. It never infers a person’s identity or selects one of several conflicting sources.
+`parseRegistryMetadata` normalizes recorded npm, PyPI, and crates.io payloads. Funding parsers accept package metadata,
+GitHub `FUNDING.yml`, and recorded public provider responses. Parsers preserve source, parser, timestamp, and the original
+bounded observation as evidence; they do not make hidden requests.
 
-`createReport(input)` emits a schema-versioned `FundGraphReport` with deterministic record ordering, relationship status summaries, evidence drill-down, diagnostics, explicit limitations, and informational review/inspect actions. `renderReportText` is terminal-safe and `renderReportJson` supports compact stable JSON or readable pretty JSON. Reports do not verify identity, endorse funding destinations, or execute actions.
+Go metadata and funding providers are not implemented.
 
-`NetworkClient` is the opt-in reliability boundary for live JSON requests. It provides typed timeout, cancellation, network, rate-limit, and cache errors; bounded retries with `Retry-After` and capped backoff; injected fetch/sleep/clock dependencies for deterministic tests; filesystem caching with TTL and explicit invalidation; offline replay; and `jsonBatch` partial-result semantics. Authenticated requests cannot be cached, and stale offline responses are returned only with a `CACHE_STALE` diagnostic.
+### Relationship and report APIs
 
-Secure defaults require public credential-free HTTPS, reject private/loopback/local destinations and redirects, and cap response bodies at 1 MiB by default (with a hard 8 MiB ceiling). Callers needing provider-specific routing must provide an explicit host allowlist; DNS resolution and network isolation remain deployment responsibilities.
+`resolveFundingRelationships(input)` emits explicit `supported`, `ambiguous`, `contradictory`, or `unresolved` states
+with rule IDs, evidence IDs, and confidence. `createReport(input)` produces a versioned report with stable ordering,
+diagnostics, evidence drill-down, limitations, and informational actions. Text output escapes terminal control characters;
+JSON output is stable. No action is executed.
 
-The fixture matrix is in `test/fixtures/integration/fixture-matrix.json`. `test/integration.test.js` runs the complete discovery-to-report pipeline for npm, PyPI, and Cargo and checks funded, unfunded, ambiguous, contradictory, missing-repository, malformed-lockfile, rate-limit, and network-failure categories.
+### Optional network helpers
 
-Development commands:
+`NetworkClient` provides bounded retries, timeouts, cancellation, rate-limit handling, opt-in TTL caching, offline replay,
+and partial batch results. Public credential-free HTTPS is the default; private/local destinations and redirects are
+rejected. Authenticated requests are not cached. Callers remain responsible for deployment-level DNS/network isolation.
 
-```text
-npm install
+## Minimal usage
+
+```ts
+import { discoverDependencies } from '@fundgraph/core';
+
+const result = discoverDependencies('./my-project');
+console.log(result.ecosystems);
+console.log(result.graph.nodes.map(({ packageId, resolvedVersion }) => ({ packageId, resolvedVersion })));
+console.log(result.diagnostics);
+```
+
+This example discovers dependencies only. To parse funding evidence and resolve relationships, call the dedicated core
+APIs with recorded payloads and explicit evidence inputs; the CLI does not yet orchestrate that entire workflow.
+
+## Development
+
+```sh
+npm ci
 npm run lint
 npm run typecheck
 npm test
@@ -39,6 +78,11 @@ npm run build
 npm pack --dry-run
 ```
 
-Contributor guidance for adapters and recorded fixtures is maintained in the sibling [`fundgraph` adapter guide](../fundgraph/docs/ADAPTER_GUIDE.md).
+The test fixtures live under `test/fixtures/`; the integration matrix is at
+[`test/fixtures/integration/fixture-matrix.json`](test/fixtures/integration/fixture-matrix.json). The CI workflow defines
+Ubuntu, Windows, and macOS jobs on Node 20 and 22.
 
-The repository CI workflow verifies Ubuntu, Windows, and macOS on Node 20 and Node 22, then uploads a package artifact after the checks pass.
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). For a new adapter or fixture, follow the `fundgraph` project's adapter guide
+and compatibility policy. Keep parsing deterministic and fixture-driven.
