@@ -32,8 +32,11 @@ Development commands:
 
 ```text
 npm install
+npm run lint
 npm run typecheck
 npm test
 npm run build
 npm pack --dry-run
 ```
+
+The repository CI workflow verifies Ubuntu, Windows, and macOS on Node 20 and Node 22, then uploads a package artifact after the checks pass.
