@@ -39,4 +39,6 @@ npm run build
 npm pack --dry-run
 ```
 
+Contributor guidance for adapters and recorded fixtures is maintained in the sibling [`fundgraph` adapter guide](../fundgraph/docs/ADAPTER_GUIDE.md).
+
 The repository CI workflow verifies Ubuntu, Windows, and macOS on Node 20 and Node 22, then uploads a package artifact after the checks pass.

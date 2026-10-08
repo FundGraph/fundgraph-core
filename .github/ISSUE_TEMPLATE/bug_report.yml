@@ -1,0 +1,25 @@
+name: Core bug report
+description: Report a reproducible fundgraph-core defect
+title: "bug(core): "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction and fixture
+      description: Include a public fixture path or sanitized input, expected result, and actual result.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node version, package version, and commit
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security considerations
+      description: Explain whether untrusted input, URLs, credentials, or private data are involved.
