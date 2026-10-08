@@ -3,7 +3,14 @@ export type FundGraphErrorCode =
   | 'UNSUPPORTED_SCHEMA'
   | 'UNSAFE_URL'
   | 'FIELD_TOO_LARGE'
-  | 'INVALID_SERIALIZATION';
+  | 'INVALID_SERIALIZATION'
+  | 'NETWORK_FAILURE'
+  | 'NETWORK_TIMEOUT'
+  | 'RATE_LIMITED'
+  | 'CANCELLED'
+  | 'CACHE_CORRUPT'
+  | 'CACHE_STALE'
+  | 'CACHE_UNSAFE';
 
 export class FundGraphError extends Error {
   readonly code: FundGraphErrorCode;

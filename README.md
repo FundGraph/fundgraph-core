@@ -22,6 +22,8 @@ Funding evidence is collected with `parsePackageFundingMetadata`, `parseGithubFu
 
 `createReport(input)` emits a schema-versioned `FundGraphReport` with deterministic record ordering, relationship status summaries, evidence drill-down, diagnostics, explicit limitations, and informational review/inspect actions. `renderReportText` is terminal-safe and `renderReportJson` supports compact stable JSON or readable pretty JSON. Reports do not verify identity, endorse funding destinations, or execute actions.
 
+`NetworkClient` is the opt-in reliability boundary for live JSON requests. It provides typed timeout, cancellation, network, rate-limit, and cache errors; bounded retries with `Retry-After` and capped backoff; injected fetch/sleep/clock dependencies for deterministic tests; filesystem caching with TTL and explicit invalidation; offline replay; and `jsonBatch` partial-result semantics. Authenticated requests cannot be cached, and stale offline responses are returned only with a `CACHE_STALE` diagnostic.
+
 Development commands:
 
 ```text
