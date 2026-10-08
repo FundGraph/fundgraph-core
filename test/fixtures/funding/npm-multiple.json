@@ -1,0 +1,8 @@
+{
+  "name": "multi-funded-package",
+  "funding": [
+    "https://github.com/sponsors/example",
+    "https://opencollective.com/example",
+    "https://example.org/fund"
+  ]
+}

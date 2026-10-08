@@ -1,0 +1,9 @@
+{
+  "name": "contradictory-package",
+  "version": "1.0.0",
+  "repository": "https://github.com/example/one",
+  "funding": [
+    "https://github.com/sponsors/example",
+    "https://opencollective.com/example"
+  ]
+}

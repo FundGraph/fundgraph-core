@@ -1,0 +1,4 @@
+{
+  "name": "malformed-lock-fixture",
+  "dependencies": { "demo": "^1.0.0" }
+}

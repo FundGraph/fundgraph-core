@@ -26,6 +26,8 @@ Funding evidence is collected with `parsePackageFundingMetadata`, `parseGithubFu
 
 Secure defaults require public credential-free HTTPS, reject private/loopback/local destinations and redirects, and cap response bodies at 1 MiB by default (with a hard 8 MiB ceiling). Callers needing provider-specific routing must provide an explicit host allowlist; DNS resolution and network isolation remain deployment responsibilities.
 
+The fixture matrix is in `test/fixtures/integration/fixture-matrix.json`. `test/integration.test.js` runs the complete discovery-to-report pipeline for npm, PyPI, and Cargo and checks funded, unfunded, ambiguous, contradictory, missing-repository, malformed-lockfile, rate-limit, and network-failure categories.
+
 Development commands:
 
 ```text

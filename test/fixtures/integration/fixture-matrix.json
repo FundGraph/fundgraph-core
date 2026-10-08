@@ -1,0 +1,11 @@
+{
+  "funded": ["funding/npm-funded.json", "funding/pypi-funded.json", "funding/cargo-funded.json"],
+  "unfunded": ["funding/npm-unfunded.json"],
+  "multiple-funding-sources": ["funding/npm-multiple.json"],
+  "contradictory-metadata": ["metadata/npm-contradictory.json"],
+  "missing-repository": ["metadata/npm-missing-repository.json"],
+  "malformed-lockfile": ["malformed-lock/package.json", "malformed-lock/package-lock.json"],
+  "aliases-workspaces-optional": ["npm-workspace/package.json", "npm-workspace/package-lock.json"],
+  "rate-limit": ["network/429.json"],
+  "network-failure": ["network/failure.json"]
+}
