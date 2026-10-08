@@ -5,6 +5,7 @@ import { projectFor } from './common.js';
 import { discoverCargo } from './cargo.js';
 import { discoverNpm } from './npm.js';
 import { discoverPypi } from './pypi.js';
+import { discoverGo } from './go.js';
 import type { DependencyGraph, DiscoveryOptions, DiscoveryResult, PartialDiscovery } from './types.js';
 import { diagnostic } from './common.js';
 
@@ -15,6 +16,7 @@ export function discoverDependencies(projectPath: string, options: DiscoveryOpti
   if (existsSync(resolve(root, 'package.json'))) partials.push(discoverNpm(root, options));
   if (existsSync(resolve(root, 'pyproject.toml')) || existsSync(resolve(root, 'requirements.txt'))) partials.push(discoverPypi(root, options));
   if (existsSync(resolve(root, 'Cargo.toml'))) partials.push(discoverCargo(root, options));
+  if (existsSync(resolve(root, 'go.mod'))) partials.push(discoverGo(root, options));
 
   const diagnostics = partials.flatMap((partial) => partial.diagnostics);
   const ecosystems = partials.map((partial) => partial.ecosystem).sort();
@@ -36,7 +38,7 @@ export function discoverDependencies(projectPath: string, options: DiscoveryOpti
       }
     }
   }
-  if (partials.length === 0) diagnostics.push(diagnostic('UNSUPPORTED_INPUT', 'No supported project manifest was found. Expected package.json, pyproject.toml, requirements.txt, or Cargo.toml.', resolve(root)));
+  if (partials.length === 0) diagnostics.push(diagnostic('UNSUPPORTED_INPUT', 'No supported project manifest was found. Expected package.json, pyproject.toml, requirements.txt, Cargo.toml, or go.mod.', resolve(root)));
   const project = projectFor(root, partials[0]?.projectName ?? '', ecosystems, graph.edges.filter((edge) => edge.fromId === `project:${encodeURIComponent(root)}`).map((edge) => edge.toId));
   graph.nodes.sort((a, b) => a.id.localeCompare(b.id));
   graph.edges.sort((a, b) => `${a.fromId}:${a.toId}:${a.source.locator}`.localeCompare(`${b.fromId}:${b.toId}:${b.source.locator}`));

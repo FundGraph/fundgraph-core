@@ -7,5 +7,6 @@
   "malformed-lockfile": ["malformed-lock/package.json", "malformed-lock/package-lock.json"],
   "aliases-workspaces-optional": ["npm-workspace/package.json", "npm-workspace/package-lock.json"],
   "rate-limit": ["network/429.json"],
-  "network-failure": ["network/failure.json"]
+  "network-failure": ["network/failure.json"],
+  "go-module-discovery": ["go-module/go.mod"]
 }

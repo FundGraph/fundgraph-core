@@ -50,6 +50,25 @@ test('discovers Cargo workspace members, optional dependencies, and lock transit
   assert.ok(result.graph.edges.some((edge) => edge.toId === result.graph.nodes.find((node) => node.packageId === 'cargo:aho-corasick')?.id));
 });
 
+test('discovers Go module requirements without executing the Go toolchain', () => {
+  const result = discoverDependencies(copyFixture('go-module'));
+  assert.deepEqual(result.ecosystems, ['go']);
+  assert.equal(result.project.name, 'example.com/fundgraph/demo');
+  assert.ok(names(result).includes('go:github.com/example/direct'));
+  assert.ok(names(result).includes('go:golang.org/x/text'));
+  assert.equal(result.graph.nodes.find((node) => node.packageId === 'go:github.com/example/direct')?.resolvedVersion, 'v1.2.3');
+  assert.equal(result.graph.nodes.find((node) => node.packageId === 'go:golang.org/x/text')?.dependencyType, 'unknown');
+  assert.equal(result.diagnostics.length, 0);
+});
+
+test('reports malformed Go module files without guessing requirements', () => {
+  const root = mkdtempSync(join(tmpdir(), 'fundgraph-go-malformed-'));
+  writeFileSync(join(root, 'go.mod'), 'require (\n\tbroken\n');
+  const result = discoverDependencies(root);
+  assert.ok(result.diagnostics.some((item) => item.code === 'MALFORMED_MANIFEST'));
+  assert.equal(result.graph.nodes.length, 0);
+});
+
 test('reports missing and malformed lockfiles without inventing resolved versions', () => {
   const root = mkdtempSync(join(tmpdir(), 'fundgraph-missing-lock-'));
   writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'missing-lock', dependencies: { demo: '^1.0.0' } }));

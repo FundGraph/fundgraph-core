@@ -60,7 +60,7 @@ export function createDependency(
     schemaVersion: '1.0',
     kind: 'Dependency',
     id: idFor(ecosystem, sourcePath, name, resolvedVersion ?? requestedVersion),
-    packageId: `${ecosystem}:${normalizePackageName(name)}`,
+    packageId: `${ecosystem}:${ecosystem === 'go' ? name.trim() : normalizePackageName(name)}`,
     dependencyType,
     source: { path: sourcePath, locator },
     parentIds: [],
