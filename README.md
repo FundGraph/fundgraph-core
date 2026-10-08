@@ -18,6 +18,8 @@ Validation rejects unsupported schema versions, unsafe credential-bearing or non
 
 Funding evidence is collected with `parsePackageFundingMetadata`, `parseGithubFundingFile`, and `parsePublicFundingResponse`. Every emitted `FundingSource` has evidence IDs. Multiple declarations remain separate, unsafe URLs and malformed files produce diagnostics, and provider responses never become authoritative identity claims. These functions consume recorded/local payloads; they do not send money or execute payments.
 
+`resolveFundingRelationships(input)` consumes packages, repositories, funding sources, evidence, repository candidates, and explicit funding claims. It emits deterministic `Relationship` records with rule IDs, evidence IDs, confidence, and `supported`, `ambiguous`, `contradictory`, or `unresolved` status. It never infers a person’s identity or selects one of several conflicting sources.
+
 Phase 4 does not implement live network fetching, funding providers, relationship resolution, or final reports. Those belong to later roadmap phases.
 
 Development commands:

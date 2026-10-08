@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test test/models.test.js test/discovery.test.js test/metadata.test.js test/funding.test.js"
+    "test": "npm run build && node --test test/models.test.js test/discovery.test.js test/metadata.test.js test/funding.test.js test/resolution.test.js"
   },
   "devDependencies": {
     "@types/node": "^24.8.0",
