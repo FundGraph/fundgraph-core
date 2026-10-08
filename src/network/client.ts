@@ -1,11 +1,48 @@
 import { FundGraphError } from '../domain/errors.js';
-import { readCache, writeCache } from './cache.js';
+import { isIP } from 'node:net';
+import { isCacheSafe, readCache, writeCache } from './cache.js';
 import type { BatchResult, NetworkClientOptions, NetworkDiagnostic, NetworkRequest, NetworkResult } from './types.js';
 
 const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 const DEFAULT_RETRIES = 2;
 const DEFAULT_TIMEOUT_MS = 10_000;
 const DEFAULT_MAX_BACKOFF_MS = 5_000;
+const DEFAULT_MAX_RESPONSE_BYTES = 1 * 1024 * 1024;
+const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
+
+function isPrivateAddress(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, '').replace(/\.$/, '');
+  if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local')) return true;
+  if (isIP(host) === 4) {
+    const octets = host.split('.').map(Number);
+    const first = octets[0] ?? -1;
+    const second = octets[1] ?? -1;
+    return first === 0 || first === 10 || first === 127 || (first === 169 && second === 254) || (first === 172 && second >= 16 && second <= 31) || (first === 192 && second === 168);
+  }
+  if (isIP(host) === 6) return host === '::1' || host.startsWith('fc') || host.startsWith('fd') || host.startsWith('fe80') || host.startsWith('::ffff:127.');
+  return false;
+}
+
+export function validateNetworkUrl(value: string, options: Pick<NetworkRequest, 'allowHttp' | 'allowedHosts'> = {}): URL {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new FundGraphError('UNSAFE_URL', 'Network URL is invalid', 'url');
+  }
+  if ((url.protocol !== 'https:' && !(options.allowHttp && url.protocol === 'http:')) || url.username || url.password || isPrivateAddress(url.hostname)) {
+    throw new FundGraphError('UNSAFE_URL', 'Network URL must use a public credential-free HTTP(S) destination', 'url');
+  }
+  if (options.allowedHosts && options.allowedHosts.length > 0) {
+    const host = url.hostname.toLowerCase().replace(/\.$/, '');
+    const allowed = options.allowedHosts.some((candidate) => {
+      const normalized = candidate.toLowerCase().replace(/^\.+|\.+$/g, '');
+      return host === normalized || host.endsWith(`.${normalized}`);
+    });
+    if (!allowed) throw new FundGraphError('UNSAFE_URL', 'Network host is not in the explicit allowlist', 'url');
+  }
+  return url;
+}
 
 function abortError(signal?: AbortSignal): FundGraphError {
   return new FundGraphError(signal?.aborted ? 'CANCELLED' : 'NETWORK_TIMEOUT', signal?.aborted ? 'Network request was cancelled' : 'Network request timed out');
@@ -32,6 +69,7 @@ export class NetworkClient {
   private readonly maxRetries: number;
   private readonly maxTimeoutMs: number;
   private readonly maxBackoffMs: number;
+  private readonly maxResponseBytes: number;
 
   constructor(options: NetworkClientOptions = {}) {
     this.fetchImpl = options.fetchImpl ?? fetch;
@@ -41,13 +79,18 @@ export class NetworkClient {
     this.maxRetries = Math.max(0, Math.min(5, Math.floor(options.maxRetries ?? DEFAULT_RETRIES)));
     this.maxTimeoutMs = Math.max(1, Math.min(120_000, Math.floor(options.maxTimeoutMs ?? DEFAULT_TIMEOUT_MS)));
     this.maxBackoffMs = Math.max(0, Math.min(60_000, Math.floor(options.maxBackoffMs ?? DEFAULT_MAX_BACKOFF_MS)));
+    this.maxResponseBytes = Math.max(1, Math.min(MAX_RESPONSE_BYTES, Math.floor(options.maxResponseBytes ?? DEFAULT_MAX_RESPONSE_BYTES)));
   }
 
   async json<T>(request: NetworkRequest): Promise<NetworkResult<T>> {
     if (request.signal?.aborted) throw abortError(request.signal);
+    validateNetworkUrl(request.url, request);
     const diagnostics: NetworkDiagnostic[] = [];
     const cache = request.cache;
-    if (cache) {
+    const cacheAllowed = isCacheSafe(request.init);
+    if (cache && !cacheAllowed) {
+      diagnostics.push({ code: 'CACHE_UNSAFE', message: 'Authenticated requests bypass the cache', url: request.url });
+    } else if (cache) {
       try {
         const cached = await readCache<T>(cache, request.url, this.now());
         if (!cached.stale || request.offline) {
@@ -67,6 +110,7 @@ export class NetworkClient {
 
     const retries = Math.max(0, Math.min(this.maxRetries, Math.floor(request.retries ?? this.maxRetries)));
     const timeoutMs = Math.max(1, Math.min(this.maxTimeoutMs, Math.floor(request.timeoutMs ?? this.maxTimeoutMs)));
+    const maxResponseBytes = Math.max(1, Math.min(this.maxResponseBytes, Math.floor(request.maxResponseBytes ?? this.maxResponseBytes)));
     let lastError: FundGraphError | undefined;
     for (let attempt = 0; attempt <= retries; attempt += 1) {
       const controller = new AbortController();
@@ -76,7 +120,8 @@ export class NetworkClient {
       let httpResponseReceived = false;
       request.signal?.addEventListener('abort', onAbort, { once: true });
       try {
-        const response = await this.fetchImpl(request.url, { ...request.init, signal: controller.signal });
+        const response = await this.fetchImpl(request.url, { ...request.init, redirect: 'manual', signal: controller.signal });
+        if (response.status >= 300 && response.status < 400) throw new FundGraphError('UNSAFE_URL', 'Network redirects are rejected by the secure default policy', 'url');
         if (!response.ok) {
           httpResponseReceived = true;
           const retryable = RETRYABLE_STATUS.has(response.status);
@@ -93,12 +138,35 @@ export class NetworkClient {
         }
         let value: T;
         try {
-          value = await response.json() as T;
-        } catch {
+          const reader = response.body?.getReader();
+          if (!reader) {
+            const text = await response.text();
+            if (Buffer.byteLength(text, 'utf8') > maxResponseBytes) throw new FundGraphError('FIELD_TOO_LARGE', 'Network response exceeds the response size limit');
+            value = JSON.parse(text) as T;
+          } else {
+            const chunks: Uint8Array[] = [];
+            let size = 0;
+            while (true) {
+              const chunk = await reader.read();
+              if (chunk.done) break;
+              size += chunk.value.byteLength;
+              if (size > maxResponseBytes) {
+                await reader.cancel();
+                throw new FundGraphError('FIELD_TOO_LARGE', 'Network response exceeds the response size limit');
+              }
+              chunks.push(chunk.value);
+            }
+            const bytes = new Uint8Array(size);
+            let offset = 0;
+            for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+            value = JSON.parse(new TextDecoder().decode(bytes)) as T;
+          }
+        } catch (error) {
+          if (error instanceof FundGraphError) throw error;
           throw new FundGraphError('NETWORK_FAILURE', 'Network response was not valid JSON', request.url);
         }
         const fetchedAt = new Date(this.now()).toISOString();
-        if (cache) {
+        if (cache && cacheAllowed) {
           try {
             await writeCache(cache, request.url, value, fetchedAt, request.init);
           } catch (error) {

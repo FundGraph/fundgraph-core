@@ -8,7 +8,7 @@ The project-level source of truth is in the sibling [`fundgraph`](../fundgraph/R
 
 ## Current API
 
-The package exports the versioned model types, `SCHEMA_VERSION`, `validateModel`, `validateModelSet`, `hasContradictoryRelationship`, `stableStringify`, `serializeModel`, `discoverDependencies`, `parseRegistryMetadata`, `resolveFundingRelationships`, `createReport`, `renderReportText`, `renderReportJson`, the discovery/metadata/report result types, and `FundGraphError`.
+The package exports the versioned model types, `SCHEMA_VERSION`, `validateModel`, `validateModelSet`, `hasContradictoryRelationship`, `stableStringify`, `serializeModel`, `discoverDependencies`, `parseRegistryMetadata`, `resolveFundingRelationships`, `createReport`, `renderReportText`, `renderReportJson`, `NetworkClient`, `fetchJson`, `fetchJsonBatch`, `validateNetworkUrl`, `invalidateCache`, the discovery/metadata/report/network result types, and `FundGraphError`.
 
 Validation rejects unsupported schema versions, unsafe credential-bearing or non-HTTP URLs, oversized fields, and invalid model shapes. Serialization sorts object keys while preserving array order.
 
@@ -23,6 +23,8 @@ Funding evidence is collected with `parsePackageFundingMetadata`, `parseGithubFu
 `createReport(input)` emits a schema-versioned `FundGraphReport` with deterministic record ordering, relationship status summaries, evidence drill-down, diagnostics, explicit limitations, and informational review/inspect actions. `renderReportText` is terminal-safe and `renderReportJson` supports compact stable JSON or readable pretty JSON. Reports do not verify identity, endorse funding destinations, or execute actions.
 
 `NetworkClient` is the opt-in reliability boundary for live JSON requests. It provides typed timeout, cancellation, network, rate-limit, and cache errors; bounded retries with `Retry-After` and capped backoff; injected fetch/sleep/clock dependencies for deterministic tests; filesystem caching with TTL and explicit invalidation; offline replay; and `jsonBatch` partial-result semantics. Authenticated requests cannot be cached, and stale offline responses are returned only with a `CACHE_STALE` diagnostic.
+
+Secure defaults require public credential-free HTTPS, reject private/loopback/local destinations and redirects, and cap response bodies at 1 MiB by default (with a hard 8 MiB ceiling). Callers needing provider-specific routing must provide an explicit host allowlist; DNS resolution and network isolation remain deployment responsibilities.
 
 Development commands:
 

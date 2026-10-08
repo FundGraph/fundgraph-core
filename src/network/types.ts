@@ -12,6 +12,7 @@ export interface NetworkDiagnostic {
 export interface CacheOptions {
   directory: string;
   ttlMs: number;
+  maxBytes?: number;
 }
 
 export interface NetworkRequest {
@@ -22,6 +23,9 @@ export interface NetworkRequest {
   cache?: CacheOptions;
   offline?: boolean;
   signal?: AbortSignal;
+  allowHttp?: boolean;
+  allowedHosts?: readonly string[];
+  maxResponseBytes?: number;
 }
 
 export interface NetworkResult<T> {
@@ -52,4 +56,5 @@ export interface NetworkClientOptions {
   maxRetries?: number;
   maxTimeoutMs?: number;
   maxBackoffMs?: number;
+  maxResponseBytes?: number;
 }
