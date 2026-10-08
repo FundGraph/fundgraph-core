@@ -1,0 +1,11 @@
+{
+  "info": {
+    "name": "fixture-package",
+    "version": "2.3.4",
+    "home_page": "https://example.test/fixture",
+    "project_urls": {
+      "Documentation": "https://docs.example.test/fixture",
+      "Source": "https://github.com/ExampleOrg/Fixture"
+    }
+  }
+}

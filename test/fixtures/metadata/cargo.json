@@ -1,0 +1,8 @@
+{
+  "crate": {
+    "id": "fixture-crate",
+    "name": "fixture-crate",
+    "max_version": "3.4.5",
+    "repository": "https://github.com/ExampleOrg/Fixture.git"
+  }
+}

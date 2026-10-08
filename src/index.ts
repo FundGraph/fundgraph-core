@@ -4,6 +4,7 @@ export * from './domain/validation.js';
 export * from './serialization/stable.js';
 export * from './inputs/types.js';
 export * from './inputs/discovery.js';
+export * from './metadata/index.js';
 
 import { validateModel } from './domain/validation.js';
 import { stableStringify } from './serialization/stable.js';

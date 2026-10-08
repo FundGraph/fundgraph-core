@@ -1,0 +1,9 @@
+{
+  "name": "@scope/fixture-package",
+  "version": "1.2.3",
+  "repository": {
+    "type": "git",
+    "url": "git+https://GitHub.com/ExampleOrg/Fixture.git"
+  },
+  "homepage": "https://example.test/fixture"
+}
