@@ -1,0 +1,9 @@
+{
+  "name": "@fundgraph/core",
+  "version": "0.1.0",
+  "description": "Reusable evidence-first dependency funding analysis library for FundGraph",
+  "license": "MIT",
+  "type": "module",
+  "private": false
+}
+
