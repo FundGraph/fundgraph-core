@@ -8,7 +8,7 @@ The project-level source of truth is in the sibling [`fundgraph`](../fundgraph/R
 
 ## Current API
 
-The package exports the versioned model types, `SCHEMA_VERSION`, `validateModel`, `validateModelSet`, `hasContradictoryRelationship`, `stableStringify`, `serializeModel`, `discoverDependencies`, `parseRegistryMetadata`, the discovery/metadata result types, and `FundGraphError`.
+The package exports the versioned model types, `SCHEMA_VERSION`, `validateModel`, `validateModelSet`, `hasContradictoryRelationship`, `stableStringify`, `serializeModel`, `discoverDependencies`, `parseRegistryMetadata`, `resolveFundingRelationships`, `createReport`, `renderReportText`, `renderReportJson`, the discovery/metadata/report result types, and `FundGraphError`.
 
 Validation rejects unsupported schema versions, unsafe credential-bearing or non-HTTP URLs, oversized fields, and invalid model shapes. Serialization sorts object keys while preserving array order.
 
@@ -20,7 +20,7 @@ Funding evidence is collected with `parsePackageFundingMetadata`, `parseGithubFu
 
 `resolveFundingRelationships(input)` consumes packages, repositories, funding sources, evidence, repository candidates, and explicit funding claims. It emits deterministic `Relationship` records with rule IDs, evidence IDs, confidence, and `supported`, `ambiguous`, `contradictory`, or `unresolved` status. It never infers a person’s identity or selects one of several conflicting sources.
 
-Phase 4 does not implement live network fetching, funding providers, relationship resolution, or final reports. Those belong to later roadmap phases.
+`createReport(input)` emits a schema-versioned `FundGraphReport` with deterministic record ordering, relationship status summaries, evidence drill-down, diagnostics, explicit limitations, and informational review/inspect actions. `renderReportText` is terminal-safe and `renderReportJson` supports compact stable JSON or readable pretty JSON. Reports do not verify identity, endorse funding destinations, or execute actions.
 
 Development commands:
 

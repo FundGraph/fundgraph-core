@@ -7,6 +7,7 @@ export * from './inputs/discovery.js';
 export * from './metadata/index.js';
 export * from './funding/index.js';
 export * from './resolution/index.js';
+export * from './reporting/index.js';
 
 import { validateModel } from './domain/validation.js';
 import { stableStringify } from './serialization/stable.js';
