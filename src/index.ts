@@ -2,6 +2,8 @@ export * from './domain/errors.js';
 export * from './domain/models.js';
 export * from './domain/validation.js';
 export * from './serialization/stable.js';
+export * from './inputs/types.js';
+export * from './inputs/discovery.js';
 
 import { validateModel } from './domain/validation.js';
 import { stableStringify } from './serialization/stable.js';

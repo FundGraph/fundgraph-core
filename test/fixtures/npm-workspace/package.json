@@ -1,0 +1,10 @@
+{
+  "name": "fixture-npm-workspace",
+  "workspaces": ["packages/*"],
+  "dependencies": {
+    "alias-lib": "npm:real-lib@^1.0.0"
+  },
+  "optionalDependencies": {
+    "optional-lib": "^2.0.0"
+  }
+}

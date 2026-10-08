@@ -1,0 +1,6 @@
+{
+  "name": "fixture-app",
+  "dependencies": {
+    "workspace-lib": "workspace:*"
+  }
+}

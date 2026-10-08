@@ -39,6 +39,7 @@ export interface Dependency extends Versioned {
   packageId: string;
   requestedVersion?: string;
   resolvedVersion?: string;
+  alias?: string;
   dependencyType: DependencyType;
   source: {
     path: string;
@@ -129,4 +130,5 @@ export type FundGraphModel =
   | Relationship;
 
 export type ModelKind = FundGraphModel['kind'];
+
 

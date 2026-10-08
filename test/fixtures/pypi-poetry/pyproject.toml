@@ -1,0 +1,6 @@
+[project]
+name = "fixture-python"
+dependencies = ["requests>=2.0"]
+
+[project.optional-dependencies.test]
+dependencies = ["pytest>=7"]

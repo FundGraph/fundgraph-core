@@ -8,9 +8,11 @@ The project-level source of truth is in the sibling [`fundgraph`](../fundgraph/R
 
 ## Phase 1 API
 
-The package exports the versioned model types, `SCHEMA_VERSION`, `validateModel`, `validateModelSet`, `hasContradictoryRelationship`, `stableStringify`, `serializeModel`, and `FundGraphError`. Validation rejects unsupported schema versions, unsafe credential-bearing or non-HTTP URLs, oversized fields, and invalid model shapes. Serialization sorts object keys while preserving array order.
+The package exports the versioned model types, `SCHEMA_VERSION`, `validateModel`, `validateModelSet`, `hasContradictoryRelationship`, `stableStringify`, `serializeModel`, `discoverDependencies`, the discovery result types, and `FundGraphError`. Validation rejects unsupported schema versions, unsafe credential-bearing or non-HTTP URLs, oversized fields, and invalid model shapes. Serialization sorts object keys while preserving array order.
 
-Phase 1 does not implement dependency discovery, registry adapters, funding providers, reports, or CLI behavior. Those belong to later roadmap phases.
+`discoverDependencies(path)` currently supports npm (`package.json`/`package-lock.json`), PyPI (`pyproject.toml`/`requirements.txt` with `poetry.lock`), and Cargo (`Cargo.toml`/`Cargo.lock`). It preserves dependency source paths and locators, detects npm/Cargo workspaces, recognizes npm aliases and optional dependencies, emits transitive edges where lockfiles provide them, and returns actionable diagnostics for missing or malformed lockfiles. It never executes project files.
+
+Phase 3 does not implement registry metadata, repository resolution, funding providers, or final reports. Those belong to later roadmap phases.
 
 Development commands:
 
