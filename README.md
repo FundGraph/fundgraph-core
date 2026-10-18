@@ -40,6 +40,13 @@ bounded observation as evidence; they do not make hidden requests.
 
 Go metadata and funding providers are not implemented.
 
+### End-to-end project analysis
+
+`analyzeProject(path, options)` orchestrates discovery, public registry metadata retrieval, package funding metadata
+parsing, relationship resolution, and deterministic reporting. Network access is explicit at the call site and every
+retrieved payload is retained as evidence. It supports npm, PyPI, and Cargo metadata providers. Go `go.mod` discovery
+is included, but Go metadata and funding providers remain out of scope.
+
 ### Relationship and report APIs
 
 `resolveFundingRelationships(input)` emits explicit `supported`, `ambiguous`, `contradictory`, or `unresolved` states
@@ -64,8 +71,8 @@ console.log(result.graph.nodes.map(({ packageId, resolvedVersion }) => ({ packag
 console.log(result.diagnostics);
 ```
 
-This example discovers dependencies only. To parse funding evidence and resolve relationships, call the dedicated core
-APIs with recorded payloads and explicit evidence inputs; the CLI does not yet orchestrate that entire workflow.
+For a complete public-metadata analysis, call `analyzeProject('./my-project')` with an explicit network policy. For
+offline or fixture-driven workflows, use `discoverDependencies` and the pure parser/resolution APIs directly.
 
 ## Development
 

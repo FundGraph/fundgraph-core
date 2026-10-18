@@ -9,6 +9,7 @@ export * from './funding/index.js';
 export * from './resolution/index.js';
 export * from './reporting/index.js';
 export * from './network/index.js';
+export * from './analysis.js';
 
 import { validateModel } from './domain/validation.js';
 import { stableStringify } from './serialization/stable.js';
