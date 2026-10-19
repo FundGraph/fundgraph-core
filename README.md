@@ -3,7 +3,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-56d6be?style=flat-square" alt="MIT license"></a>
   <img src="https://img.shields.io/badge/Node.js-20%20%7C%2022-83a8ff?style=flat-square" alt="Node.js 20 and 22">
-  <img src="https://img.shields.io/badge/status-pre--publication-ffca72?style=flat-square" alt="Pre-publication release candidate">
+  <img src="https://img.shields.io/badge/status-v0.1%20published-56d6be?style=flat-square" alt="v0.1 package published">
 </p>
 
 # fundgraph-core
@@ -13,8 +13,9 @@ relationship resolution, and deterministic reports. It contains no terminal UX o
 
 ## Package status
 
-Version `0.1.0` is prepared locally and is not yet published to npm. The project-level mission, roadmap, security policy,
-and cross-repository decisions are maintained in the separate `fundgraph` project repository.
+Version `0.1.0` was the initial published package baseline. The current package metadata patch is `0.1.1`. The
+project-level mission, roadmap, security policy, and cross-repository decisions are maintained in the separate `fundgraph`
+project repository.
 
 ## Capabilities
 
