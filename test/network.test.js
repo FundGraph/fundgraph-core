@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, readdir, readFile, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { FundGraphError, NetworkClient, fetchJsonBatch, invalidateCache } from '../dist/index.js';
 
@@ -32,8 +31,9 @@ test('does not retry non-retryable HTTP responses', async () => {
   assert.equal(calls, 1);
 });
 
-test('opt-in cache supports online population and offline replay', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'fundgraph-cache-'));
+test('opt-in cache supports online population and offline replay', async (t) => {
+  const directory = await mkdtemp(join(process.cwd(), '.fundgraph-cache-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
   let calls = 0;
   const client = new NetworkClient({ fetchImpl: async () => { calls += 1; return response({ value: 42 }); } });
   const request = { url: 'https://example.test/cached', cache: { directory, ttlMs: 60_000 } };
@@ -48,8 +48,9 @@ test('opt-in cache supports online population and offline replay', async () => {
   assert.equal((await readdir(directory)).length, 0);
 });
 
-test('corrupt cache is diagnosed online and stale cache is rejected offline', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'fundgraph-cache-corrupt-'));
+test('corrupt cache is diagnosed online and stale cache is rejected offline', async (t) => {
+  const directory = await mkdtemp(join(process.cwd(), '.fundgraph-cache-corrupt-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
   const cache = { directory, ttlMs: 1 };
   const client = new NetworkClient({ fetchImpl: async () => response({ refreshed: true }) });
   const request = { url: 'https://example.test/stale', cache };
