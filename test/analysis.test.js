@@ -14,7 +14,7 @@ test('analyzeProject orchestrates discovery, registry metadata, funding evidence
       if (url === 'https://api.github.com/repos/example/fixture-package/contents/.github/FUNDING.yml') {
         return new Response('', { status: 404 });
       }
-      assert.equal(url, 'https://registry.npmjs.org/fixture-package');
+      assert.equal(url, 'https://registry.npmjs.org/fixture-package/1.2.3');
       return new Response(JSON.stringify({
         name: 'fixture-package',
         version: '1.2.3',

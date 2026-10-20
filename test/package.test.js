@@ -6,6 +6,7 @@ const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.me
 
 test('package metadata identifies the public repository and supported runtime', () => {
   assert.equal(packageJson.name, '@fundgraph/core');
+  assert.equal(packageJson.version, '0.1.2');
   assert.equal(packageJson.repository.url, 'https://github.com/FundGraph/fundgraph-core.git');
   assert.equal(packageJson.homepage, 'https://github.com/FundGraph/fundgraph-core#readme');
   assert.equal(packageJson.bugs.url, 'https://github.com/FundGraph/fundgraph-core/issues');
