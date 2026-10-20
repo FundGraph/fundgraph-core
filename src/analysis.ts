@@ -27,8 +27,13 @@ export interface ProjectAnalysisResult {
   networkFailures: Array<{ packageId: string; url: string; message: string }>;
 }
 
-function metadataUrl(pkg: { ecosystem: string; name: string }): string | undefined {
-  if (pkg.ecosystem === 'npm') return `https://registry.npmjs.org/${encodeURIComponent(pkg.name)}`;
+function metadataUrl(pkg: { ecosystem: string; name: string; version?: string }): string | undefined {
+  if (pkg.ecosystem === 'npm') {
+    const packagePath = encodeURIComponent(pkg.name);
+    return pkg.version === undefined
+      ? `https://registry.npmjs.org/${packagePath}`
+      : `https://registry.npmjs.org/${packagePath}/${encodeURIComponent(pkg.version)}`;
+  }
   if (pkg.ecosystem === 'pypi') return `https://pypi.org/pypi/${encodeURIComponent(pkg.name)}/json`;
   if (pkg.ecosystem === 'cargo') return `https://crates.io/api/v1/crates/${encodeURIComponent(pkg.name)}`;
   return undefined;
@@ -80,7 +85,8 @@ export async function analyzeProject(projectPath: string, options: ProjectAnalys
       diagnostics.push({ code: 'UNSUPPORTED_ECOSYSTEM', message: `No metadata provider is implemented for ${id}` });
       return;
     }
-    const url = metadataUrl(identity);
+    const resolvedVersion = discovery.graph.nodes.find((node) => node.packageId === id)?.resolvedVersion;
+    const url = metadataUrl({ ...identity, ...(resolvedVersion === undefined ? {} : { version: resolvedVersion }) });
     if (!url) return;
     try {
       const request = requestOptions(url, options, new URL(url).hostname === 'registry.npmjs.org' ? ['registry.npmjs.org'] : new URL(url).hostname === 'pypi.org' ? ['pypi.org'] : ['crates.io']);

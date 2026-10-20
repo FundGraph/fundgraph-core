@@ -14,7 +14,7 @@ deterministic reports. It contains no terminal UX or payment behavior.
 
 ## Package status
 
-Version `0.1.0` was the initial published package baseline. The current package metadata patch is `0.1.1`. The
+Version `0.1.0` was the initial published package baseline. The current package and bounded-registry patch is `0.1.2`. The
 project-level mission, roadmap, security policy, and cross-repository decisions are maintained in the separate `fundgraph`
 project repository.
 
