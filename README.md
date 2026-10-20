@@ -8,8 +8,9 @@
 
 # fundgraph-core
 
-The reusable TypeScript library behind FundGraph. Core owns dependency discovery, versioned models, evidence parsing,
-relationship resolution, and deterministic reports. It contains no terminal UX or payment behavior.
+The reusable TypeScript library behind FundGraph's funding-evidence analysis. Core owns dependency discovery as the
+input boundary, versioned models, provenance-bearing metadata and funding parsers, relationship resolution, and
+deterministic reports. It contains no terminal UX or payment behavior.
 
 ## Package status
 
@@ -36,8 +37,10 @@ It does not run package managers, build tools, or the Go toolchain.
 ### Metadata and funding evidence
 
 `parseRegistryMetadata` normalizes recorded npm, PyPI, and crates.io payloads. Funding parsers accept package metadata,
-GitHub `FUNDING.yml`, and recorded public provider responses. Parsers preserve source, parser, timestamp, and the original
-bounded observation as evidence; they do not make hidden requests.
+GitHub `FUNDING.yml`, and recorded public provider responses. Parsers preserve source, parser, observation timestamp, and
+the original bounded response as evidence; they do not make hidden requests. A recorded response is a point-in-time
+observation, not a guarantee that the registry or funding declaration is current. Reports expose its timestamp, and users
+should refresh network evidence when freshness matters.
 
 Go metadata and funding providers are not implemented.
 
