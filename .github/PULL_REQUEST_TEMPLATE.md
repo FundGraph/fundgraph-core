@@ -1,6 +1,7 @@
 ## Summary
 
-Describe the core behavior or documentation change.
+<!-- State the smallest core behavior, evidence, security, or documentation change in 1–3 bullets. -->
+- 
 
 ## Verification
 
@@ -11,6 +12,11 @@ Describe the core behavior or documentation change.
 - [ ] `npm test`
 - [ ] `npm run build`
 
+<!-- If a check is not applicable, write `N/A — reason` instead of leaving it ambiguous. -->
+
 ## Compatibility
 
-Describe API, schema, report, or dependency-version impact. Link the project-level decision or issue when required.
+<!-- Describe API, schema, report, or dependency-version impact. Link the project-level decision when required. -->
+- 
+
+<!-- Do not claim tests, provider correctness, or security properties that were not actually verified. -->
