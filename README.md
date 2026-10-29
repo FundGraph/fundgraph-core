@@ -1,16 +1,33 @@
-<p align="center"><img src="assets/fundgraph-core.svg" alt="FundGraph Core: reusable graph, evidence, and report library" width="100%"></p>
+# fundgraph-core
+
+<p align="center"><img src="assets/fundgraph-core-v1.svg" alt="FundGraph Core: reusable graph, evidence, and report library" width="100%"></p>
 
 <p align="center">
+  <a href="https://github.com/FundGraph/fundgraph-core/actions/workflows/ci.yml"><img src="https://github.com/FundGraph/fundgraph-core/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-56d6be?style=flat-square" alt="MIT license"></a>
   <img src="https://img.shields.io/badge/Node.js-20%20%7C%2022-83a8ff?style=flat-square" alt="Node.js 20 and 22">
   <img src="https://img.shields.io/badge/status-v0.1%20published-56d6be?style=flat-square" alt="v0.1 package published">
 </p>
 
-# fundgraph-core
-
 The reusable TypeScript library behind FundGraph's funding-evidence analysis. Core owns dependency discovery as the
 input boundary, versioned models, provenance-bearing metadata and funding parsers, relationship resolution, and
 deterministic reports. It contains no terminal UX or payment behavior.
+
+## Repository role
+
+`fundgraph-core` is the reusable evidence and analysis library. It owns the domain models, dependency discovery,
+metadata and funding parsers, relationship resolution, deterministic reports, and network policy helpers consumed by
+the CLI. It does not own terminal UX, package publishing orchestration, wallet behavior, or payments.
+
+```mermaid
+flowchart LR
+  A[Project manifests and lockfiles] --> B[Dependency discovery]
+  B --> C[Versioned models]
+  D[Recorded registry/funding responses] --> E[Evidence parsers]
+  C --> F[Relationship resolution]
+  E --> F
+  F --> G[Deterministic report API]
+```
 
 ## Package status
 
@@ -97,3 +114,11 @@ Ubuntu, Windows, and macOS jobs on Node 20 and 22.
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md). For a new adapter or fixture, follow the `fundgraph` project's adapter guide
 and compatibility policy. Keep parsing deterministic and fixture-driven.
+
+## Related repositories and governance
+
+- [`fundgraph`](https://github.com/FundGraph/fundgraph) — project source of truth, roadmap, and release coordination.
+- [`fundgraph-cli`](https://github.com/FundGraph/fundgraph-cli) — executable, output rendering, and exit codes.
+- [`SECURITY.md`](SECURITY.md) — security boundaries and reporting.
+- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) — community standards.
+- [`CHANGELOG.md`](CHANGELOG.md) — package change history.
