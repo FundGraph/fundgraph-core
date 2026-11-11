@@ -95,6 +95,23 @@ console.log(result.diagnostics);
 For a complete public-metadata analysis, call `analyzeProject('./my-project')` with an explicit network policy. For
 offline or fixture-driven workflows, use `discoverDependencies` and the pure parser/resolution APIs directly.
 
+## Verify the published package
+
+Install the versioned package and run the repository's checks from a clean checkout:
+
+```sh
+npm install @fundgraph/core@0.1.2
+npm ci
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npm pack --dry-run
+```
+
+The published package is a reusable library rather than an executable. For a copy-paste CLI verification using the
+same versioned release family, see the [FundGraph public verification guide](https://github.com/FundGraph/fundgraph/blob/main/PUBLIC_VERIFICATION.md).
+
 ## Development
 
 ```sh
